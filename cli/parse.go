@@ -1,7 +1,12 @@
 package cli
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
+	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/qdrant"
+	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/video"
 	"github.com/urfave/cli/v2"
 )
 
@@ -24,7 +29,47 @@ func ParseCommand(cfg *config.Config) *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			return nil // TODO
+			videoPath := c.Args().First()
+			if videoPath == "" {
+				return fmt.Errorf("video path required")
+			}
+
+			v, err := video.New(videoPath)
+			if err != nil {
+				fmt.Errorf("failed to initialize video: %w", err)
+			}
+
+			if err := v.Extract(cfg.SamplingInterval); err != nil {
+				return fmt.Errorf("frame extraction failed: %w", err)
+			}
+
+			defer func() {
+				if !cfg.Debug {
+					v.Cleanup()
+				} else {
+					log.Printf("temporary files retained at: %s", v.ProcessingPath)
+				}
+			}()
+
+			dbClient, err := qdrant.New(cfg.DatabaseURL)
+			if err != nil {
+				return fmt.Errorf("failed to connect to database: %w", err)
+			}
+
+			for i := range v.Frames {
+				frame := &v.Frames[i]
+
+				if err := frame.Process(c.Context, cfg); err != nil {
+					log.Printf("skipping frame %s: %v", frame.Path, err)
+					continue
+				}
+
+				if err := dbClient.Store(c.Context, v.ID, frame); err != nil {
+					log.Printf("failed to store frame %s: %v", frame.Path, err)
+				}
+			}
+
+			return nil
 		},
 	}
 }
