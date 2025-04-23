@@ -1,19 +1,12 @@
 package cli
 
 import (
+	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
 	"github.com/urfave/cli/v2"
 )
 
-type Config struct {
-	SamplingInterval int
-	SamplingModel    string
-	OllamaURL        string
-	DatabaseURL      string
-	Debug            bool
-}
-
 func New() *cli.App {
-	cfg := &Config{}
+	cfg := &config.Config{}
 
 	app := &cli.App{
 		Name:  "llm-video-analyze",

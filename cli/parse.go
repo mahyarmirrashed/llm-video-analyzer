@@ -1,8 +1,11 @@
 package cli
 
-import "github.com/urfave/cli/v2"
+import (
+	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
+	"github.com/urfave/cli/v2"
+)
 
-func ParseCommand(cfg *Config) *cli.Command {
+func ParseCommand(cfg *config.Config) *cli.Command {
 	return &cli.Command{
 		Name:  "parse",
 		Usage: "Process a video into database",
