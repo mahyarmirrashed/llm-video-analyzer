@@ -69,7 +69,7 @@ func (c *Client) Store(ctx context.Context, videoID string, frame *video.Frame) 
 		Points: []*qdrant.PointStruct{{
 			Id:      qdrant.NewIDUUID(uuid.NewString()),
 			Vectors: qdrant.NewVectors(frame.Embedding...),
-			Payload: qdrant.NewValueMap(map[string]interface{}{
+			Payload: qdrant.NewValueMap(map[string]any{
 				"video_id":    videoID,
 				"timestamp":   frame.Timestamp.Seconds(),
 				"description": frame.Description,
