@@ -53,8 +53,8 @@ func (v *Video) Extract(interval int) error {
 		"ffmpeg",
 		"-i", v.Path,
 		"-vf", fmt.Sprintf("fps=1/%d", interval),
-		"-strftime", "1",
-		filepath.Join(v.ProcessingPath, "frame_%Ts.png"), // %T is timestamp in seconds
+		"-frame_pts", "1",
+		filepath.Join(v.ProcessingPath, "frame_%05d.png"),
 	)
 
 	if err := cmd.Run(); err != nil {
@@ -69,7 +69,7 @@ func (v *Video) Extract(interval int) error {
 	for i, f := range frames {
 		v.Frames[i] = Frame{
 			Path:      f,
-			Timestamp: parseTimestamp(f),
+			Timestamp: parseTimestamp(f, interval),
 		}
 		log.Printf("processed frame %d: %s with timestamp: %v", i, f, v.Frames[i].Timestamp)
 	}
@@ -94,14 +94,13 @@ func hash(path string) ([]byte, error) {
 	return h.Sum(nil), nil
 }
 
-func parseTimestamp(path string) time.Duration {
+func parseTimestamp(path string, interval int) time.Duration {
 	filename := filepath.Base(path)
 
-	// Parses timestamps from FFmpeg's `-strftime` pattern
 	if parts := strings.Split(filename, "_"); len(parts) > 1 {
 		timePart := strings.TrimSuffix(parts[1], filepath.Ext(parts[1]))
-		if secs, err := strconv.ParseFloat(strings.TrimSuffix(timePart, "s"), 64); err == nil {
-			return time.Duration(secs * float64(time.Second))
+		if secs, err := strconv.ParseInt(timePart, 10, 64); err == nil {
+			return time.Duration(int(secs)*interval) * time.Second
 		}
 	}
 
