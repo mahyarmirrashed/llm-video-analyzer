@@ -57,6 +57,8 @@ func ParseCommand(cfg *config.Config) *cli.Command {
 			}
 
 			for i := range v.Frames {
+				log.Printf("processing frame %d...", i)
+
 				frame := &v.Frames[i]
 
 				if err := frame.Process(c.Context, cfg); err != nil {

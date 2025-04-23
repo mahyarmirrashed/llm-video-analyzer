@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -27,6 +28,8 @@ type ollamaResponse struct {
 }
 
 func (f *Frame) Process(ctx context.Context, cfg *config.Config) error {
+	log.Printf("processing frame at path: %s with timestamp: %v", f.Path, f.Timestamp)
+
 	image, err := os.ReadFile(f.Path)
 	if err != nil {
 		return fmt.Errorf("failed to read frame: %w", err)
@@ -78,6 +81,7 @@ func (f *Frame) Process(ctx context.Context, cfg *config.Config) error {
 
 	f.Description = ollamaRep.Response
 	f.Embedding = ollamaRep.Embedding
+	log.Printf("processed frame, description: %s, embedding length: %d", f.Description, len(f.Embedding))
 
 	return nil
 }

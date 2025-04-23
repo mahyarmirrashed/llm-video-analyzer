@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -40,10 +41,13 @@ func (v *Video) Cleanup() error {
 }
 
 func (v *Video) Extract(interval int) error {
+	log.Printf("starting frame extraction for video ID: %s with interval: %d seconds", v.ID, interval)
+
 	v.ProcessingPath = filepath.Join(os.TempDir(), "llm-video-analyze", v.ID)
 	if err := os.MkdirAll(v.ProcessingPath, 0755); err != nil {
 		return fmt.Errorf("failed to create temp dir: %w", err)
 	}
+	log.Printf("created temporary directory: %s", v.ProcessingPath)
 
 	cmd := exec.Command(
 		"ffmpeg",
@@ -58,13 +62,19 @@ func (v *Video) Extract(interval int) error {
 	}
 
 	frames, _ := filepath.Glob(filepath.Join(v.ProcessingPath, "frame_*.png"))
+
+	log.Printf("found %d frames in processing path: %s", len(frames), v.ProcessingPath)
+
 	v.Frames = make([]Frame, len(frames))
 	for i, f := range frames {
 		v.Frames[i] = Frame{
 			Path:      f,
 			Timestamp: parseTimestamp(f),
 		}
+		log.Printf("processed frame %d: %s with timestamp: %v", i, f, v.Frames[i].Timestamp)
 	}
+
+	log.Printf("completed extraction for video ID: %s, total frames: %d", v.ID, len(v.Frames))
 
 	return nil
 }
