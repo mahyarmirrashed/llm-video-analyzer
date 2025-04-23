@@ -20,11 +20,13 @@
           version = "0.1.0";
           src = self;
         };
+
+        runtimeEnv = with pkgs; [ffmpeg];
       in {
         formatter = pkgs.alejandra;
 
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [git go gotools lazygit];
+          packages = with pkgs; [git go gotools lazygit] ++ runtimeEnv;
         };
 
         packages.default = mahyarmirrashed-llm-video-analyzer;
