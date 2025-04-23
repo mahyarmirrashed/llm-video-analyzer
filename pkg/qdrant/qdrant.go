@@ -50,7 +50,7 @@ func New(databaseURL string) (*Client, error) {
 		err = client.CreateCollection(ctx, &qdrant.CreateCollection{
 			CollectionName: collectionName,
 			VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
-				Size:     7168,
+				Size:     768,
 				Distance: qdrant.Distance_Cosine,
 			}),
 		})
