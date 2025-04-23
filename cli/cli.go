@@ -25,7 +25,7 @@ func New() *cli.App {
 			},
 			&cli.StringFlag{
 				Name:        "database-url",
-				Value:       "http://localhost:6333",
+				Value:       "http://localhost:6334",
 				Usage:       "Vector database URL",
 				Destination: &cfg.DatabaseURL,
 			},
