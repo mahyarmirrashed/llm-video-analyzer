@@ -29,6 +29,12 @@ func New() *cli.App {
 				Usage:       "Vector database URL",
 				Destination: &cfg.DatabaseURL,
 			},
+			&cli.StringFlag{
+				Name:        "embedding-model",
+				Value:       "nomic-embed-text",
+				Usage:       "Description embedding model for retrieval",
+				Destination: &cfg.EmbeddingModel,
+			},
 			&cli.BoolFlag{
 				Name:        "debug",
 				Usage:       "Enable debug mode",

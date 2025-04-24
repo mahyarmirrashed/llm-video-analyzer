@@ -27,12 +27,6 @@ func ParseCommand(cfg *config.Config) *cli.Command {
 				Usage:       "Frame sampling model for analysis",
 				Destination: &cfg.SamplingModel,
 			},
-			&cli.StringFlag{
-				Name:        "embedding-model",
-				Value:       "nomic-embed-text",
-				Usage:       "Description embedding model for retrieval",
-				Destination: &cfg.EmbeddingModel,
-			},
 		},
 		Action: func(c *cli.Context) error {
 			videoPath := c.Args().First()
