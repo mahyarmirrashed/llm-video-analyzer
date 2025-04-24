@@ -77,6 +77,8 @@ func ParseCommand(cfg *config.Config) *cli.Command {
 				}
 			}
 
+			log.Printf("finished processing video")
+
 			return nil
 		},
 	}
