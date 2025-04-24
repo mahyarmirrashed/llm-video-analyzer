@@ -15,7 +15,10 @@ type Client struct {
 	*qdrant.Client
 }
 
-const collectionName = "llm-video-analyzer-frames"
+const (
+	collectionName           = "llm-video-analyzer-frames"
+	collectionDimensionality = 768
+)
 
 func New(databaseURL string) (*Client, error) {
 	u, err := url.Parse(databaseURL)
@@ -50,7 +53,7 @@ func New(databaseURL string) (*Client, error) {
 		err = client.CreateCollection(ctx, &qdrant.CreateCollection{
 			CollectionName: collectionName,
 			VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
-				Size:     768,
+				Size:     collectionDimensionality,
 				Distance: qdrant.Distance_Cosine,
 			}),
 		})
