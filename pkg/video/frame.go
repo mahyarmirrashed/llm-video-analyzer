@@ -108,7 +108,7 @@ func (f *Frame) sendOllamaRequest(ctx context.Context, cfg *config.Config, endpo
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := &http.Client{Timeout: 120 * time.Second}
 
 	rep, err := client.Do(req)
 	if err != nil {
