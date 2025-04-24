@@ -9,4 +9,5 @@ $ nix develop
 $ docker compose up -d
 $ docker compose exec ollama ollama pull llava:7b # or your preferred model
 $ docker compose exec ollama ollama pull nomic-embed-text
+$ docker compose exec ollama ollama pull llama3.2
 ```
