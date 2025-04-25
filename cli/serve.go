@@ -23,7 +23,14 @@ func ServeCommand(cfg *config.Config) *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			return nil
+			server, err := api.New(cfg)
+			if err != nil {
+				return err
+			}
+
+			log.Printf("starting server on port %d", cfg.ServerPort)
+
+			return http.ListenAndServe(fmt.Sprintf(":%d", cfg.ServerPort), server.Router)
 		},
 	}
 }
