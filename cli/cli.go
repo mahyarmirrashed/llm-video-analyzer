@@ -15,6 +15,7 @@ func New() *cli.App {
 			ProcessCommand(cfg),
 			QueryCommand(cfg),
 			CleanCommand(cfg),
+			ServeCommand(cfg),
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{

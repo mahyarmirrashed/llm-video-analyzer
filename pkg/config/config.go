@@ -8,5 +8,6 @@ type Config struct {
 	QueryModel       string
 	OllamaURL        string
 	DatabaseURL      string
+	ServerPort       uint
 	Debug            bool
 }
