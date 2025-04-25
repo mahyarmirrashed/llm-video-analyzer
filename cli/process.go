@@ -42,14 +42,7 @@ func ProcessCommand(cfg *config.Config) *cli.Command {
 			if err := v.Extract(cfg.SamplingInterval); err != nil {
 				return fmt.Errorf("frame extraction failed: %w", err)
 			}
-
-			defer func() {
-				if !cfg.Debug {
-					v.Cleanup()
-				} else {
-					log.Printf("temporary files retained at: %s", v.ProcessingPath)
-				}
-			}()
+			defer v.Cleanup()
 
 			dbClient, err := qdrant.New(cfg.DatabaseURL)
 			if err != nil {

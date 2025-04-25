@@ -36,11 +36,6 @@ func New() *cli.App {
 				Usage:       "Description embedding model for retrieval",
 				Destination: &cfg.EmbeddingModel,
 			},
-			&cli.BoolFlag{
-				Name:        "debug",
-				Usage:       "Enable debug mode",
-				Destination: &cfg.Debug,
-			},
 		},
 	}
 
