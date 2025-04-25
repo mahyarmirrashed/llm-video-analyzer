@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/ollama"
@@ -55,8 +56,14 @@ func QueryCommand(cfg *config.Config) *cli.Command {
 				return fmt.Errorf("no results found")
 			}
 
-			for _, res := range pts {
-				fmt.Printf("Result: %v", res)
+			for i, res := range pts {
+				parts := strings.SplitN(res.VideoID, "-", 2)
+
+				filename := parts[1]
+
+				fmt.Printf("Result: %d\n", i+1)
+				fmt.Printf("  Video: %s\n", filename)
+				fmt.Printf("  Command: mpv '%s' --start=%.0f\n", filename, res.Timestamp)
 			}
 
 			return nil
