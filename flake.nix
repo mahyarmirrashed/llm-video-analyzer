@@ -26,7 +26,7 @@
         formatter = pkgs.alejandra;
 
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [git go gotools lazygit] ++ runtimeEnv;
+          packages = with pkgs; [deno git go gotools lazygit] ++ runtimeEnv;
         };
 
         packages.default = mahyarmirrashed-llm-video-analyzer;
