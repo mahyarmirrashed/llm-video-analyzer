@@ -16,7 +16,7 @@ type Client struct {
 }
 
 type SearchResult struct {
-	VideoID     string
+	Url         string
 	Timestamp   float64
 	Description string
 	Score       float32
@@ -100,7 +100,7 @@ func (c *Client) Search(ctx context.Context, embedding []float32, limit uint64) 
 		payload := pt.GetPayload()
 
 		res = append(res, SearchResult{
-			VideoID:     payload["video_id"].GetStringValue(),
+			Url:         payload["url"].GetStringValue(),
 			Timestamp:   payload["timestamp"].GetDoubleValue(),
 			Description: payload["description"].GetStringValue(),
 			Score:       pt.GetScore(),
@@ -110,14 +110,14 @@ func (c *Client) Search(ctx context.Context, embedding []float32, limit uint64) 
 	return res, nil
 }
 
-func (c *Client) Store(ctx context.Context, videoID string, frame *video.Frame) error {
+func (c *Client) Store(ctx context.Context, url string, frame *video.Frame) error {
 	_, err := c.Upsert(ctx, &qdrant.UpsertPoints{
 		CollectionName: collectionName,
 		Points: []*qdrant.PointStruct{{
 			Id:      qdrant.NewIDUUID(uuid.NewString()),
 			Vectors: qdrant.NewVectors(frame.Embedding...),
 			Payload: qdrant.NewValueMap(map[string]any{
-				"video_id":    videoID,
+				"url":         url,
 				"timestamp":   frame.Timestamp.Seconds(),
 				"description": frame.Description,
 			}),

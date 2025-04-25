@@ -3,7 +3,6 @@ package cli
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/cmd"
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
@@ -48,13 +47,9 @@ func QueryCommand(cfg *config.Config) *cli.Command {
 			}
 
 			for i, res := range pts {
-				parts := strings.SplitN(res.VideoID, "-", 2)
-
-				filename := parts[1]
-
 				log.Printf("Result: %d\n", i+1)
-				log.Printf("  Video: %s\n", filename)
-				log.Printf("  Command: mpv '%s' --start=%.0f\n", filename, res.Timestamp)
+				log.Printf("  Video: %s?t=%.0f\n", res.Url, res.Timestamp)
+				log.Println()
 			}
 
 			return nil
