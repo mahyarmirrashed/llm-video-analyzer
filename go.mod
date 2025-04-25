@@ -3,6 +3,7 @@ module github.com/mahyarmirrashed/llm-video-analyzer
 go 1.23.7
 
 require (
+	github.com/go-chi/chi/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/qdrant/go-client v1.14.0
 	github.com/urfave/cli/v2 v2.27.6
