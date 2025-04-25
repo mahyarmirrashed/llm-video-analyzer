@@ -3,23 +3,19 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/cmd"
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
-	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/ollama"
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/qdrant"
-	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/video"
 )
 
 type Server struct {
 	cfg    *config.Config
-	db     *qdrant.Client
+	cmd    *cmd.Command
 	Router *chi.Mux
 }
 
@@ -32,7 +28,7 @@ func New(cfg *config.Config) (*Server, error) {
 	r := chi.NewRouter()
 	s := &Server{
 		cfg:    cfg,
-		db:     db,
+		cmd:    cmd.New(cfg, db),
 		Router: r,
 	}
 
@@ -64,50 +60,28 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleProcess(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(300 << 20) // 300 MB
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "failed to parse form data")
+	type processRequest struct {
+		Url string `json:"url"`
+	}
+
+	var req processRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
-	file, header, err := r.FormFile("video")
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "video file is required")
-		return
-	}
-	defer file.Close()
-
-	tempDir, err := os.MkdirTemp("", "llm-video-analzyer")
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create temporary processing directory")
-		return
-	}
-	defer os.RemoveAll(tempDir)
-
-	tempFilePath := filepath.Join(tempDir, header.Filename)
-	tempFile, err := os.Create(tempFilePath)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create temp file")
-		return
-	}
-	defer tempFile.Close()
-
-	_, err = io.Copy(tempFile, file)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to save video file")
+	if req.Url == "" {
+		writeError(w, http.StatusBadRequest, "url is required")
 		return
 	}
 
-	v, err := video.New(tempFilePath)
+	_, err := s.cmd.Process(r.Context(), req.Url)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to initialize video")
+		writeError(w, http.StatusInternalServerError, "failed to process video")
 		return
 	}
 
-	if err := v.Extract(s.cfg.SamplingInterval); err != nil {
-		writeError(w, http.StatusInternalServerError, "frame extraction failed")
-		return
-	}
+	writeJSON(w, http.StatusOK, nil)
 }
 
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
@@ -131,21 +105,9 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 		req.Limit = s.cfg.QueryLimit
 	}
 
-	desc, err := ollama.GetDescriptionFromQuery(r.Context(), s.cfg, req.Query)
+	res, err := s.cmd.Query(r.Context(), req.Query, req.Limit)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to process query")
-		return
-	}
-
-	embedding, err := ollama.GetTextEmbedding(r.Context(), s.cfg, desc)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to get embedding")
-		return
-	}
-
-	res, err := s.db.Search(r.Context(), embedding, uint64(req.Limit))
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "search failed")
+		writeError(w, http.StatusInternalServerError, "failed to query")
 		return
 	}
 
@@ -153,10 +115,10 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleClean(w http.ResponseWriter, r *http.Request) {
-	if err := s.db.Cleanup(r.Context()); err != nil {
+	if err := s.cmd.Clean(r.Context()); err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to clean database")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]string{"status": "success"})
+	writeJSON(w, http.StatusOK, nil)
 }
