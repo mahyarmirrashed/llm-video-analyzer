@@ -24,7 +24,7 @@ func ProcessCommand(cfg *config.Config) *cli.Command {
 			},
 			&cli.StringFlag{
 				Name:        "sampling-model",
-				Value:       "llava",
+				Value:       "llava:7b",
 				Usage:       "Frame sampling model for analysis",
 				Destination: &cfg.SamplingModel,
 			},
