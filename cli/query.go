@@ -21,7 +21,7 @@ func QueryCommand(cfg *config.Config) *cli.Command {
 				Destination: &cfg.QueryModel,
 			},
 			&cli.IntFlag{
-				Name:        "query-limit",
+				Name:        "limit",
 				Value:       3,
 				Usage:       "Number of results to return",
 				Destination: &cfg.QueryLimit,
