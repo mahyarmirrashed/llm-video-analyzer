@@ -23,7 +23,7 @@ func (yd *YouTubeDownloader) Download(ctx context.Context, url string) (string, 
 
 	tempFile := filepath.Join(yd.TempDir, "download.mp4")
 
-	cmd := exec.CommandContext(ctx, "yt-dlp", "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best", "-o", tempFile, url)
+	cmd := exec.CommandContext(ctx, "yt-dlp", "-o", tempFile, url)
 
 	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("download failed")
