@@ -49,6 +49,8 @@ func New(databaseURL string) (*Client, error) {
 		return nil, err
 	}
 
+	res := Client{client}
+
 	// ensure collection exists
 	ctx := context.Background()
 	exists, err := client.CollectionExists(ctx, collectionName)
@@ -57,20 +59,22 @@ func New(databaseURL string) (*Client, error) {
 	}
 
 	if !exists {
-		err = client.CreateCollection(ctx, &qdrant.CreateCollection{
-			CollectionName: collectionName,
-			VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
-				Size:     collectionDimensionality,
-				Distance: qdrant.Distance_Cosine,
-			}),
-		})
-
+		err = res.createCollection(ctx, collectionName)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return &Client{client}, nil
+	return &res, nil
+}
+
+func (c *Client) Cleanup(ctx context.Context) error {
+	err := c.Client.DeleteCollection(ctx, collectionName)
+	if err != nil {
+		return err
+	}
+
+	return c.createCollection(ctx, collectionName)
 }
 
 func (c *Client) Search(ctx context.Context, embedding []float32, limit uint64) ([]SearchResult, error) {
@@ -121,4 +125,20 @@ func (c *Client) Store(ctx context.Context, videoID string, frame *video.Frame) 
 	})
 
 	return err
+}
+
+func (c *Client) createCollection(ctx context.Context, collectionName string) error {
+	err := c.Client.CreateCollection(ctx, &qdrant.CreateCollection{
+		CollectionName: collectionName,
+		VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
+			Size:     collectionDimensionality,
+			Distance: qdrant.Distance_Cosine,
+		}),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
