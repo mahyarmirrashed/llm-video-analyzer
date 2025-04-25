@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/qdrant"
@@ -18,7 +19,14 @@ func CleanCommand(cfg *config.Config) *cli.Command {
 				return fmt.Errorf("failed to connect to database: %w", err)
 			}
 
-			return dbClient.Cleanup(c.Context)
+			err = dbClient.Cleanup(c.Context)
+			if err != nil {
+				return fmt.Errorf("failed to clean database: %w", err)
+			}
+
+			log.Println("finished cleaning out database")
+
+			return nil
 		},
 	}
 }
