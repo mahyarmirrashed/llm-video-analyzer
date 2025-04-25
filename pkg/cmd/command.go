@@ -31,7 +31,7 @@ func (c *Command) Process(ctx context.Context, url string) (string, error) {
 
 	path, err := d.Download(ctx, url)
 	if err != nil {
-		return "", fmt.Errorf("download failed: %w", err)
+		return "", err
 	}
 	defer os.Remove(path)
 
