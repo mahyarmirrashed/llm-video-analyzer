@@ -73,12 +73,7 @@ func (c *Command) Query(ctx context.Context, query string) ([]qdrant.SearchResul
 		return nil, fmt.Errorf("failed to get embedding: %w", err)
 	}
 
-	dbClient, err := qdrant.New(c.cfg.DatabaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
-	}
-
-	pts, err := dbClient.Search(ctx, embedding, uint64(c.cfg.QueryLimit))
+	pts, err := c.db.Search(ctx, embedding, uint64(limit))
 	if err != nil {
 		return nil, fmt.Errorf("search failed: %w", err)
 	} else if len(pts) == 0 {
