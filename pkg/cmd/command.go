@@ -62,7 +62,7 @@ func (c *Command) Process(ctx context.Context, url string) (string, error) {
 	return url, nil
 }
 
-func (c *Command) Query(ctx context.Context, query string) ([]qdrant.SearchResult, error) {
+func (c *Command) Query(ctx context.Context, query string, limit int) ([]qdrant.SearchResult, error) {
 	desc, err := ollama.GetDescriptionFromQuery(ctx, c.cfg, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get description: %w", err)

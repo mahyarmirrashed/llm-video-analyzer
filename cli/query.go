@@ -42,7 +42,7 @@ func QueryCommand(cfg *config.Config) *cli.Command {
 			}
 
 			command := cmd.New(cfg, db)
-			pts, err := command.Query(c.Context, query)
+			pts, err := command.Query(c.Context, query, cfg.QueryLimit)
 			if err != nil {
 				return err
 			}
