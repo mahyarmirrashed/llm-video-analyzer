@@ -21,7 +21,7 @@
           src = self;
         };
 
-        runtimeEnv = with pkgs; [ffmpeg];
+        runtimeEnv = with pkgs; [ffmpeg yt-dlp];
       in {
         formatter = pkgs.alejandra;
 
