@@ -36,6 +36,28 @@ func GetDescriptionFromImage(ctx context.Context, cfg *config.Config, data []byt
 	return res.Response, nil
 }
 
+func GetDescriptionFromQuery(ctx context.Context, cfg *config.Config, text string) (string, error) {
+	payload := map[string]any{
+		"model":  cfg.QueryModel,
+		"prompt": fmt.Sprintf("Create a description of an image using the following query that we can use to search in our vector database: %s", text),
+		"stream": false,
+	}
+
+	rep, err := request(ctx, cfg, "/api/generate", payload)
+	if err != nil {
+		return "", err
+	}
+
+	var res struct {
+		Response string `json:"response"`
+	}
+	if err := json.Unmarshal(rep, &res); err != nil {
+		return "", fmt.Errorf("failed to decode description response: %w", err)
+	}
+
+	return res.Response, nil
+}
+
 func GetTextEmbedding(ctx context.Context, cfg *config.Config, text string) ([]float32, error) {
 	payload := map[string]any{
 		"model":  cfg.EmbeddingModel,
