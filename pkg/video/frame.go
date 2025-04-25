@@ -26,7 +26,7 @@ func (f *Frame) Process(ctx context.Context, cfg *config.Config) error {
 		return fmt.Errorf("failed to read frame: %w", err)
 	}
 
-	desc, err := ollama.GetImageDescription(ctx, cfg, data)
+	desc, err := ollama.GetDescriptionFromImage(ctx, cfg, data)
 	if err != nil {
 		return fmt.Errorf("failed to get description: %w", err)
 	}

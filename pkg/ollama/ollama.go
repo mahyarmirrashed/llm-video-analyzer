@@ -13,7 +13,7 @@ import (
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
 )
 
-func GetImageDescription(ctx context.Context, cfg *config.Config, data []byte) (string, error) {
+func GetDescriptionFromImage(ctx context.Context, cfg *config.Config, data []byte) (string, error) {
 	payload := map[string]any{
 		"model":  cfg.SamplingModel,
 		"prompt": "Describe this video frame in detail for search purposes. Include objects, actions, colors, and context.",
