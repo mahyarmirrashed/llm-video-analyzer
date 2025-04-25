@@ -26,7 +26,7 @@ func (yd *YouTubeDownloader) Download(ctx context.Context, url string) (string, 
 	cmd := exec.CommandContext(ctx, "yt-dlp", "-o", tempFile, url)
 
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("download failed")
+		return "", fmt.Errorf("download failed: %w", err)
 	}
 
 	if _, err := os.Stat(tempFile); err != nil {
