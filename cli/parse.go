@@ -10,9 +10,9 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func ParseCommand(cfg *config.Config) *cli.Command {
+func ProcessCommand(cfg *config.Config) *cli.Command {
 	return &cli.Command{
-		Name:  "parse",
+		Name:  "process",
 		Usage: "Process a video into database",
 		Flags: []cli.Flag{
 			&cli.IntFlag{

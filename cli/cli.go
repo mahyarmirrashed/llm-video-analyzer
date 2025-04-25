@@ -12,7 +12,7 @@ func New() *cli.App {
 		Name:  "llm-video-analyze",
 		Usage: "Search through videos using natural language",
 		Commands: []*cli.Command{
-			ParseCommand(cfg),
+			ProcessCommand(cfg),
 			QueryCommand(cfg),
 			CleanCommand(cfg),
 		},
