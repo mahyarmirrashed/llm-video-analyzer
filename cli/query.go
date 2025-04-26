@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/cmd"
 	"github.com/mahyarmirrashed/llm-video-analyzer/pkg/config"
@@ -47,9 +46,9 @@ func QueryCommand(cfg *config.Config) *cli.Command {
 			}
 
 			for i, res := range pts {
-				log.Printf("Result: %d\n", i+1)
-				log.Printf("  Video: %s&t=%.0f\n", res.Url, res.Timestamp)
-				log.Println()
+				fmt.Printf("Result: %d\n", i+1)
+				fmt.Printf("  Video: %s&t=%.0f\n", res.Url, res.Timestamp)
+				fmt.Println()
 			}
 
 			return nil
