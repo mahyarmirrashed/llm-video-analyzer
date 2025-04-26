@@ -48,7 +48,7 @@ func QueryCommand(cfg *config.Config) *cli.Command {
 
 			for i, res := range pts {
 				log.Printf("Result: %d\n", i+1)
-				log.Printf("  Video: %s?t=%.0f\n", res.Url, res.Timestamp)
+				log.Printf("  Video: %s&t=%.0f\n", res.Url, res.Timestamp)
 				log.Println()
 			}
 
