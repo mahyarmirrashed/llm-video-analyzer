@@ -6,13 +6,15 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-  }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
     flake-utils.lib.eachDefaultSystem (
-      system: let
+      system:
+      let
         pkgs = nixpkgs.legacyPackages.${system};
 
         mahyarmirrashed-llm-video-analyzer = pkgs.stdenv.mkDerivation {
@@ -21,12 +23,25 @@
           src = self;
         };
 
-        runtimeEnv = with pkgs; [ffmpeg yt-dlp];
-      in {
+        runtimeEnv = with pkgs; [
+          ffmpeg
+          yt-dlp
+        ];
+      in
+      {
         formatter = pkgs.alejandra;
 
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [deno git go gotools lazygit] ++ runtimeEnv;
+          packages =
+            with pkgs;
+            [
+              deno
+              git
+              go
+              gotools
+              lazygit
+            ]
+            ++ runtimeEnv;
         };
 
         packages.default = mahyarmirrashed-llm-video-analyzer;
