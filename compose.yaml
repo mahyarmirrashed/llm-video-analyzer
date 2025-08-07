@@ -6,7 +6,6 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     command: "serve"
-
   qdrant:
     image: qdrant/qdrant
     ports:
@@ -15,7 +14,6 @@ services:
     volumes:
       - qdrant-data:/qdrant/storage
     restart: unless-stopped
-
 volumes:
   ollama-data:
   qdrant-data:
